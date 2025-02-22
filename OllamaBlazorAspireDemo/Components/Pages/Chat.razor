@@ -1,0 +1,155 @@
+﻿@page "/chat"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.SemanticKernel.ChatCompletion
+@using Microsoft.SemanticKernel
+@using Microsoft.AspNetCore.Authorization
+@using OllamaBlazorAspireDemo.Data
+@using OllamaBlazorAspireDemo.Data.Entities
+@using System.Text.Json
+@using System.Security.Claims
+
+@attribute [Authorize]
+@inject IChatCompletionService chatCompletionService
+@inject ApplicationDbContext dbContext
+@inject AuthenticationStateProvider authenticationStateProvider
+
+<PageTitle>Chat</PageTitle>
+
+<h1 class="text-center my-4">Chat</h1>
+
+<div class="container">
+    <div class="row">
+        @if (DisplayAlert)
+        {
+            <div class="alert alert-success fade-in" role="alert">
+                @AlertMessage
+            </div>
+        }
+    </div>
+    <div class="row">
+        <div class="col-4">
+            <button class="btn btn-info mb-3" @onclick="()=>NewChat()" >New Chat</button>
+            <ul class="list-group overflow-auto" style="max-height:600px">
+                @foreach (var chat in userChats)
+                {
+                    <li class="list-group-item cursor-pointer">
+                        <span @onclick="() => SetChat(chat)">@chat.ChatTitle</span>
+                        <span class="bi bi-trash float-end cursor-pointer" @onclick="()=>DeleteChat(chat)"></span>
+                    </li>
+                }
+            </ul>
+        </div>
+        <div class="col-8">
+
+            <ul class="list-group overflow-auto mb-3" style="max-height:600px">
+                @foreach (var chat in chatHistory.Where(x => x.Role != AuthorRole.System))
+                {
+                    <li class="list-group-item">
+                        <i>@chat.Role.ToString().ToUpper(): </i>
+                        <p>@((MarkupString)md.Transform(chat.Content))</p>
+                    </li>
+                }
+            </ul>
+            <div class="input-group">
+                <input @bind="userMessage" class="form-control" disabled="@IsThinking" placeholder="Type your message..." />
+                <button @onclick="SendMessage" class="btn btn-primary" disabled="@IsThinking">Send</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string userMessage = string.Empty;
+    const string systemMessage = "You are an AI assistant that help user to get answer for this questions. Your answers must be summarized, brief and contains maximum of 25 words.";
+    private ChatHistory chatHistory = new ChatHistory(systemMessage);
+    private List<UserChat> userChats = new List<UserChat>();
+    private UserChat? currentUserChat;
+    private string? userId;
+    public bool DisplayAlert { get; set; }
+    public string AlertMessage { get; set; }
+    public MarkdownDeep.Markdown md = new MarkdownDeep.Markdown();
+    public bool IsThinking = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
+        userId = authState.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+        if (userId != null)
+        {
+            userChats = await dbContext.Chats.Where(x => x.UserId == userId).ToListAsync();
+        }
+    }
+
+    private async Task SendMessage()
+    {
+        if (!string.IsNullOrWhiteSpace(userMessage))
+        {
+            var message = new ChatMessageContent(AuthorRole.User, userMessage);
+            chatHistory.Add(message);
+            IsThinking = true;
+            if (currentUserChat == null)
+            {
+                currentUserChat = new UserChat
+                {
+                    ChatTitle = userMessage.Substring(0, Math.Min(userMessage.Length, 30)),
+                    UserId = userId,
+                    ChatJson = JsonSerializer.Serialize(chatHistory)
+                };
+                dbContext.Chats.Add(currentUserChat);
+                userChats.Add(currentUserChat);
+            }
+            else
+            {
+                currentUserChat.ChatJson = JsonSerializer.Serialize(chatHistory);
+            }
+            userMessage = string.Empty;
+            try
+            {
+                var response = await chatCompletionService.GetChatMessageContentAsync(chatHistory);
+                var answer = RemoveThinkTags(response?.Content ?? string.Empty);
+                chatHistory.Add(new ChatMessageContent(AuthorRole.Assistant, answer));
+                currentUserChat.ChatJson = JsonSerializer.Serialize(chatHistory);
+                await dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                AlertMessage = ex.ToString();
+            }
+            IsThinking = false;
+        }
+    }
+
+    public void NewChat(){
+        chatHistory = new ChatHistory(systemMessage);
+        currentUserChat = null;
+        IsThinking = false;
+        DisplayAlert = false;
+        userMessage = string.Empty;
+    }
+
+    public async Task DeleteChat(UserChat chat){
+        userChats.Remove(chat);
+        dbContext.Chats.Remove(chat);
+        await dbContext.SaveChangesAsync();
+        NewChat();
+    }
+
+    private void SetChat(UserChat userChat)
+    {
+        currentUserChat = userChat;
+        chatHistory = JsonSerializer.Deserialize<ChatHistory>(currentUserChat.ChatJson) ?? new ChatHistory(systemMessage);
+    }
+
+    private string RemoveThinkTags(string input)
+    {
+        while (true)
+        {
+            int startIndex = input.IndexOf("<think>");
+            if (startIndex == -1) break;
+            int endIndex = input.IndexOf("</think>", startIndex);
+            if (endIndex == -1) break;
+            input = input.Remove(startIndex, endIndex - startIndex + 8);
+        }
+        return input;
+    }
+}

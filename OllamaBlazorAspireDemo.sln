@@ -1,0 +1,45 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35728.132
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OllamaBlazorAspireDemo", "OllamaBlazorAspireDemo\OllamaBlazorAspireDemo.csproj", "{4AE4DAE5-51BA-49A6-9860-A9FCBF037A58}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OllamaBlazorAspireDemo.AppHost", "OllamaBlazorAspireDemo.AppHost\OllamaBlazorAspireDemo.AppHost.csproj", "{75898288-EB30-4C52-ACB3-13EF080A25FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OllamaBlazorAspireDemo.ServiceDefaults", "OllamaBlazorAspireDemo.ServiceDefaults\OllamaBlazorAspireDemo.ServiceDefaults.csproj", "{94DEB8AF-5456-48A8-A369-8BD385AF7510}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{80FDF8D0-A4DF-44EA-8EA2-4BE6295617F7}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "aspire", "aspire", "{E8A98F85-54D8-46A7-857E-B478DA264ECC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4AE4DAE5-51BA-49A6-9860-A9FCBF037A58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4AE4DAE5-51BA-49A6-9860-A9FCBF037A58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4AE4DAE5-51BA-49A6-9860-A9FCBF037A58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4AE4DAE5-51BA-49A6-9860-A9FCBF037A58}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75898288-EB30-4C52-ACB3-13EF080A25FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75898288-EB30-4C52-ACB3-13EF080A25FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75898288-EB30-4C52-ACB3-13EF080A25FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75898288-EB30-4C52-ACB3-13EF080A25FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94DEB8AF-5456-48A8-A369-8BD385AF7510}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94DEB8AF-5456-48A8-A369-8BD385AF7510}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94DEB8AF-5456-48A8-A369-8BD385AF7510}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94DEB8AF-5456-48A8-A369-8BD385AF7510}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{75898288-EB30-4C52-ACB3-13EF080A25FC} = {E8A98F85-54D8-46A7-857E-B478DA264ECC}
+		{94DEB8AF-5456-48A8-A369-8BD385AF7510} = {E8A98F85-54D8-46A7-857E-B478DA264ECC}
+	EndGlobalSection
+EndGlobal
