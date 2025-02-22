@@ -91,9 +91,4 @@ public class Program
 
         app.Run();
     }
-
-    public class ChatModel
-    {
-        public string Input { get; set; }
-    }
 }

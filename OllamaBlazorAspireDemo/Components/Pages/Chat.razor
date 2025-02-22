@@ -32,7 +32,7 @@
             <ul class="list-group overflow-auto" style="max-height:600px">
                 @foreach (var chat in userChats)
                 {
-                    <li class="list-group-item cursor-pointer">
+                    <li class="list-group-item cursor-pointer @(currentUserChat?.Id == chat.Id?"active":"")">
                         <span @onclick="() => SetChat(chat)">@chat.ChatTitle</span>
                         <span class="bi bi-trash float-end cursor-pointer" @onclick="()=>DeleteChat(chat)"></span>
                     </li>
