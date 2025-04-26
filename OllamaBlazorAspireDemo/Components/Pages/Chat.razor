@@ -66,7 +66,7 @@
     private UserChat? currentUserChat;
     private string? userId;
     public bool DisplayAlert { get; set; }
-    public string AlertMessage { get; set; }
+    public string? AlertMessage { get; set; }
     public MarkdownDeep.Markdown md = new MarkdownDeep.Markdown();
     public bool IsThinking = false;
 
@@ -92,7 +92,7 @@
                 currentUserChat = new UserChat
                 {
                     ChatTitle = userMessage.Substring(0, Math.Min(userMessage.Length, 30)),
-                    UserId = userId,
+                    UserId = userId ?? string.Empty,
                     ChatJson = JsonSerializer.Serialize(chatHistory)
                 };
                 dbContext.Chats.Add(currentUserChat);

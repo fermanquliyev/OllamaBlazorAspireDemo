@@ -29,17 +29,20 @@ public class Program
         builder.Services.AddScoped<IdentityRedirectManager>();
         builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
-#pragma warning disable SKEXP0070 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+        #region AddOllamaChatCompletion
         var endpointString = builder.Configuration.GetConnectionString("chatmodel") ?? throw new ArgumentNullException("chatmodel");
         var endpointParts = endpointString.Split(';');
         var endpoint = endpointParts[0].Split('=')[1];
         var model = endpointParts[1].Split('=')[1];
-        builder.Services.AddOllamaChatCompletion(new OllamaApiClient(new HttpClient
+        #pragma warning disable SKEXP0070 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+        builder.Services.AddKernel()
+            .AddOllamaChatCompletion(new OllamaApiClient(new HttpClient
         {
             BaseAddress = new Uri(endpoint),
-            Timeout = TimeSpan.FromMinutes(5)
+            Timeout = TimeSpan.FromMinutes(10)
         }, model)); ;
-#pragma warning restore SKEXP0070 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+        #pragma warning restore SKEXP0070 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+        #endregion
 
 
         builder.Services.AddAuthentication(options =>

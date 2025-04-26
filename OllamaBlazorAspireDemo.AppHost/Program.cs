@@ -2,7 +2,7 @@ var builder = DistributedApplication.CreateBuilder(args);
 
 var sql = builder.AddSqlServer("sql")
                 .WithDataVolume()
-                 .WithLifetime(ContainerLifetime.Persistent);
+                .WithLifetime(ContainerLifetime.Persistent);
 
 var ollamablazoraspiredemodb = sql.AddDatabase("ollamablazoraspiredemodb");
 
@@ -23,9 +23,9 @@ var chatmodelendpoint = ollama.GetEndpoint("chatmodelendpoint");
 
 builder.AddProject<Projects.OllamaBlazorAspireDemo>("ollamablazoraspiredemo")
     .WithReference(ollamablazoraspiredemodb)
-       .WaitFor(ollamablazoraspiredemodb)
+    .WaitFor(ollamablazoraspiredemodb)
     .WithReference(chatmodel)
-           .WaitFor(chatmodel)
-           .WithReference(chatmodelendpoint);
+    .WaitFor(chatmodel)
+    .WithReference(chatmodelendpoint);
 
 builder.Build().Run();
