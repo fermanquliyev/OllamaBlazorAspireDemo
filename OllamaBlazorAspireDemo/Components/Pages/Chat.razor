@@ -10,6 +10,7 @@
 
 @attribute [Authorize]
 @inject IChatCompletionService chatCompletionService
+@inject Kernel kernel
 @inject ApplicationDbContext dbContext
 @inject AuthenticationStateProvider authenticationStateProvider
 
@@ -105,15 +106,24 @@
             userMessage = string.Empty;
             try
             {
-                var response = await chatCompletionService.GetChatMessageContentAsync(chatHistory);
+                var response = await chatCompletionService.GetChatMessageContentAsync(chatHistory
+                // Uncomment this if you want to use tools, plugins, or functions
+                // , executionSettings: new PromptExecutionSettings
+                // {
+                //         FunctionChoiceBehavior = FunctionChoiceBehavior.Auto(),
+                // },
+                // kernel:kernel
+                );
                 var answer = RemoveThinkTags(response?.Content ?? string.Empty);
                 chatHistory.Add(new ChatMessageContent(AuthorRole.Assistant, answer));
                 currentUserChat.ChatJson = JsonSerializer.Serialize(chatHistory);
                 await dbContext.SaveChangesAsync();
+                DisplayAlert = false;
             }
             catch (Exception ex)
             {
-                AlertMessage = ex.ToString();
+                DisplayAlert = true;
+                AlertMessage = ex.Message;
             }
             IsThinking = false;
         }

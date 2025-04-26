@@ -9,6 +9,7 @@ using OllamaBlazorAspireDemo.Components;
 using OllamaBlazorAspireDemo.Components.Account;
 using OllamaBlazorAspireDemo.Data;
 using OllamaBlazorAspireDemo.Data.Entities;
+using OllamaBlazorAspireDemo.SemanticKernel.Plugins;
 using OllamaSharp;
 
 namespace OllamaBlazorAspireDemo;
@@ -35,12 +36,13 @@ public class Program
         var endpoint = endpointParts[0].Split('=')[1];
         var model = endpointParts[1].Split('=')[1];
         #pragma warning disable SKEXP0070 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
-        builder.Services.AddKernel()
+        var kernel = builder.Services.AddKernel()
             .AddOllamaChatCompletion(new OllamaApiClient(new HttpClient
         {
             BaseAddress = new Uri(endpoint),
             Timeout = TimeSpan.FromMinutes(10)
-        }, model)); ;
+        }, model))
+        .Plugins.AddFromType<BasicCalculatorPlugin>();
         #pragma warning restore SKEXP0070 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
         #endregion
 
